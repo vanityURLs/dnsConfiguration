@@ -11,13 +11,14 @@ D('vanityurls.link', REG_NONE, DnsProvider(cloudFlare), DISABLE_IGNORE_SAFETY_CH
     ALIAS('mta-sts','mta-sts-vanityurls-link.pages.dev.',  cfProxy),
     TXT('_github-pages-challenge-vanityURLs','190fe223ffbdc9a230854700615524'),
 
+    ALIAS('@','website-2ax.pages.dev.',  cfProxy),
     AAAA("git", '2001:DB8::1', cfProxy),
     CF_TEMP_REDIRECT("git.vanityurls.link/*", "https://github.com/vanityURLs/$1"),
     AAAA("code", '2001:DB8::1', cfProxy),
     CF_TEMP_REDIRECT("code.vanityurls.link/*", "https://github.com/vanityURLs/website/$1"),
-    AAAA("web", '2001:DB8::1', cfProxy),
-    CF_TEMP_REDIRECT("web.vanityurls.link/*", "https://github.com/vanityURLs/website/$1")
-    
+    AAAA("www", '2001:DB8::1', cfProxy),
+    CF_TEMP_REDIRECT("www.vanityurls.link/*", "https://vanityURLs.link/$1")
+  
 );
 
 D('v8s.link', REG_NONE, DnsProvider(cloudFlare), DISABLE_IGNORE_SAFETY_CHECK,
@@ -34,7 +35,11 @@ D('v8s.link', REG_NONE, DnsProvider(cloudFlare), DISABLE_IGNORE_SAFETY_CHECK,
     TXT('_github-pages-challenge-vanityURLs','c5061048e2ccff690543a0ec9c67cf'),
 
     AAAA("git", '2001:DB8::1', cfProxy),
-    CF_TEMP_REDIRECT("git.v8s.link/*", "https://github.com/vanityURLs/$1")
+    CF_TEMP_REDIRECT("git.v8s.link/*", "https://github.com/vanityURLs/$1"),
+    AAAA("@", '2001:DB8::1', cfProxy),
+    CF_TEMP_REDIRECT("v8s.link/*", "https://vanityURLs.link/$1"),
+    AAAA("www", '2001:DB8::1', cfProxy),
+    CF_TEMP_REDIRECT("www.v8s.link/*", "https://vanityURLs.link/$1")    
 //     AAAA("code", '2001:DB8::1', cfProxy),
 //     CF_TEMP_REDIRECT("code.v8s.link/*", "https://github.com/vanityURLs/website/$1"),
 //     AAAA("web", '2001:DB8::1', cfProxy),
