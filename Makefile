@@ -30,7 +30,6 @@ tabBold           := $(tab)$(boldText)
 help: ## Show this help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {sub("\\\\n",sprintf("\n%22c"," "), $$2);printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-
 test: banner ## Preview the modification
 	@echo -e  $(boldText)"\n\n##########" $(tab)DNS Control: preview$(tabNormal)"\n"
 	@$(dnsControl) preview
@@ -42,22 +41,9 @@ build: banner ## Push the update to the nameservers
 	@printf "\n\n"
 
 secret:  ## Inject secret via 1Password
-	op inject -i ./lib/creds.json.tpl -o creds.json
+	op inject -i creds.json.tpl -o creds.json
 
-ddns: ## ISPs dynamically update their customer’s IP addresses, let's identify the current one
-	@# https://developers.cloudflare.com/dns/manage-dns-records/how-to/managing-dynamic-ip-addresses
-	curl -o ip.json 'https://api.ipgeolocation.io/getip'
-
-encrypt: ## Encrypt config file with a secret
-	gpg --batch --passphrase $(secret) --symmetric config.js
-	rm config.js
-	ls config.*
-
-decrypt: ## Decrypt config file
-	gpg --batch --output config.js --passphrase $(secret) --decrypt config.js.gpg
-	ls config.*
-
-gitCommit:
+commit:
 	$(MAKE) triage
 	@echo -e  $(boldText)"\n\n##########" $(tab)Git add ${configFile}$(tabNormal)"\n"
 	git add ${configFile}
@@ -67,7 +53,7 @@ gitCommit:
 	git push
 	@printf "\n\n"
 
-gitArchive:
+archive:
 	$(MAKE) banner
 	$(MAKE) pull
 	@echo -e  $(boldText)"\n\n##########" $(tab)Archive ${configFile}$(tabNormal)"\n"
@@ -80,6 +66,16 @@ gitArchive:
 	@git push
 	@printf "\n\n"
 	$(MAKE) updateDNS
+
+triage:
+	$(MAKE) ticket
+	@echo -e  $(boldText)"\n\n##########" $(tab)Git add ${configFile}$(tabNormal)"\n"
+	git add ${configFile}
+	@echo -e  $(boldText)"\n\n##########" $(tab)Git commit: $(gitMsg)$(tabNormal)"\n"
+	git commit -m$(gitMsg)
+	@echo -e  $(boldText)"\n\n##########" $(tab)Git push$(tabNormal)"\n"
+	git push
+	@printf "\n\n"
 
 clean: banner
 	@echo -e  $(boldText)"\n##########" $(tab)Remove dnsConfig.json and archive subFolder"\n"$(normalText)
@@ -97,7 +93,7 @@ banner:
 	@printf "###################################################################################################\n\n"
 
 
-triage:
+ticket:
 ifdef ticket
 gitMsg = "Update DNS configurations with ticket \#"$(ticket)
 else ifdef msg
